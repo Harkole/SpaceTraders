@@ -1,5 +1,4 @@
-﻿using SpaceTraders.Ui.Models;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace SpaceTraders.Ui.Services
 {
@@ -7,20 +6,20 @@ namespace SpaceTraders.Ui.Services
     {
         private readonly HttpClient _httpClient;
         private bool disposedValue;
-        private Actor _actor = new();
+        private string? _token;
 
-        public Actor Actor 
+        public string Token
         {
             get
             {
-                return _actor;
+                return _token ?? string.Empty;
             }
 
             set
             {
-                _actor = value;
+                _token = value;
 
-                if (value.Token != null)
+                if (value != null)
                 {
                     _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {value}");
                 }
