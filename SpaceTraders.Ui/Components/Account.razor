@@ -1,0 +1,36 @@
+﻿@inject ApiService _apiService;
+
+<h3>@AccountDetails?.Username Account Information</h3>
+
+<table class="table table-light">
+    <thead>
+        <tr>
+            <th scope="col">@nameof(AccountDto.JoinedAt)</th>
+            <th scope="col">@nameof(AccountDto.Credits)</th>
+            <th scope="col">@nameof(AccountDto.ShipCount)</th>
+            <th scope="col">@nameof(AccountDto.StructureCount)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@AccountDetails?.JoinedAt</td>
+            <td>@AccountDetails?.Credits</td>
+            <td>@AccountDetails?.ShipCount</td>
+            <td>@AccountDetails?.StructureCount</td>
+        </tr>
+    </tbody>
+</table>
+
+@code {
+    private AccountDto? AccountDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserDto? user = await _apiService.Get<UserDto>("my/account");
+
+        if (null != user)
+        {
+            AccountDetails = user.User;
+        }
+    }
+}
