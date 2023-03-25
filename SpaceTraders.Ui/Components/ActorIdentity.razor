@@ -4,9 +4,13 @@
 <div class="row align-items-start">
     <div class="col">
         <h2 class="h3 mb-3 fw-normal">Claim Username</h2>
+        @if (!string.IsNullOrEmpty(AlreadyClaimed))
+        {
+            <div class="alert-danger">@AlreadyClaimed</div>
+        }
         <div class="form-floating-mb-3 mb-3">
-            <EditForm Model="@apiService.Actor" OnSubmit="@HandleClaimSubmit" class="form-floating">
-                <InputText id="username" @bind-Value="apiService.Actor.Username" class="form-control" placeholder="user" />
+            <EditForm Model="@Actor" OnSubmit="@HandleClaimSubmit" class="form-floating">
+                <InputText id="username" @bind-Value="Actor.Username" class="form-control" placeholder="user" />
                 <label for="username">Username</label>
                 <div class="mb-3 p-2">
                     <button class="btn btn-primary" type="submit">Claim Username</button>
@@ -16,9 +20,13 @@
     </div>
     <div class="col">
         <h2>Sign In</h2>
+        @if (IsInvalidToken)
+        {
+            <div class="alert-warning">Invalid Token</div>
+        }
         <div class="form-floating-mb-3 mb-3">
-            <EditForm Model="@apiService.Actor" OnSubmit="@HandleLoginSubmit" class="form-floating">
-                <InputText id="token" @bind-Value="apiService.Actor.Token" class="form-control" placeholder="token" />
+            <EditForm Model="@apiService.Token" OnSubmit="@HandleLoginSubmit" class="form-floating">
+                <InputText id="token" @bind-Value="apiService.Token" class="form-control" placeholder="token" />
                 <label for="token">Token</label>
                 <div class="mb-3 p-2">
                     <button class="btn btn-primary" type="submit">Login</button>
@@ -29,25 +37,41 @@
 </div>
 
 @code {
+    private Actor Actor = new();
+    private string AlreadyClaimed = string.Empty;
+    private bool IsInvalidToken = false;
+
     private async Task HandleClaimSubmit()
     {
-        HttpResponseMessage response = await apiService.Post($"/users/{apiService.Actor.Username}/claim");
+        // Blank the AlreadyClaimed value to reset any status messages
+        AlreadyClaimed = string.Empty;
+        HttpResponseMessage response = await apiService.Post($"/users/{Actor.Username}/claim");
 
         if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
         {
-            apiService.Actor.Token = "Username already claimed, please select another name";
+            AlreadyClaimed = "Username already claimed, please select another name";
         }
         else
         {
             Actor? claimedActor = await response.Content.ReadFromJsonAsync<Actor>();
 
-            if (null != claimedActor)
+            if (null != claimedActor?.Token)
             {
-                apiService.Actor.Token = claimedActor.Token;
+                apiService.Token = claimedActor.Token;
             }
         }
     }
 
     private void HandleLoginSubmit()
-        => navigationManager.NavigateTo("/myaccount");
+    {
+        if (!Guid.TryParse(apiService.Token, out Guid _))
+        {
+            IsInvalidToken = true;
+        }
+        else
+        {
+            IsInvalidToken = false;
+            navigationManager.NavigateTo("/myaccount");
+        }
+    }
 }
