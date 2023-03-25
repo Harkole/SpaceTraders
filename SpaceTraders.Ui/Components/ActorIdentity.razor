@@ -1,4 +1,5 @@
 ﻿@inject ApiService apiService;
+@inject NavigationManager navigationManager;
 
 <div class="row align-items-start">
     <div class="col">
@@ -47,8 +48,6 @@
         }
     }
 
-    private async Task HandleLoginSubmit()
-    {
-        await Task.Delay(TimeSpan.FromSeconds(2));
-    }
+    private void HandleLoginSubmit()
+        => navigationManager.NavigateTo("/myaccount");
 }
