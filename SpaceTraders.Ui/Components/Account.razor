@@ -1,8 +1,8 @@
 ﻿@inject ApiService _apiService;
 
-<h3>@AccountDetails?.Username Account Information</h3>
+<h3>@AccountDetails?.Username :: @_apiService.Token</h3>
 
-<table class="table table-light">
+<table class="table table-light text-center">
     <thead>
         <tr>
             <th scope="col">@nameof(AccountDto.JoinedAt)</th>
