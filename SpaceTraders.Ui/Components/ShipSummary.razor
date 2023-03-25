@@ -1,0 +1,59 @@
+﻿@inject ApiService _apiService;
+
+@if (null != Ships)
+{
+
+    <h3>Available Ship(s)</h3>
+    <table class="table table-light table-striped">
+        <thead>
+            <tr>
+                <th scope="col">@nameof(ShipDto.Id)</th>
+                <th scope="col">@nameof(ShipDto.FlightPlanId)</th>
+                <th scope="col">@nameof(ShipDto.Manufacturer)</th>
+                <th scope="col">@nameof(ShipDto.Class)</th>
+                <th scope="col">@nameof(ShipDto.Type)</th>
+                <th scope="col">@nameof(ShipDto.Location)</th>
+                <th scope="col">@nameof(ShipDto.MaxCargo)</th>
+                <th scope="col">@nameof(ShipDto.SpaceAvailable)</th>
+                <th scope="col">@nameof(ShipDto.Speed)</th>
+                <th scope="col">@nameof(ShipDto.Plating)</th>
+                <th scope="col">@nameof(ShipDto.Weapons)</th>
+                <th scope="col">Co-Ordinates</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (ShipDto ship in Ships)
+            {
+                <tr>
+                    <td>@ship.Id</td>
+                    <td>@ship.FlightPlanId</td>
+                    <td>@ship.Manufacturer</td>
+                    <td>@ship.Class</td>
+                    <td>@ship.Type</td>
+                    <td>@ship.Location</td>
+                    <td>@ship.MaxCargo</td>
+                    <td>@ship.SpaceAvailable</td>
+                    <td>@ship.Speed</td>
+                    <td>@ship.Plating</td>
+                    <td>@ship.Weapons</td>
+                    <td>X: @ship.X Y: @ship.Y</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<ShipDto>? Ships;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShipsDto? ships = await _apiService.Get<ShipsDto>("my/ships");
+
+        if (null != ships)
+        {
+            Ships = ships.Ships;
+        }
+    }
+}
