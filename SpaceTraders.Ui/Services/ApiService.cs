@@ -19,8 +19,9 @@ namespace SpaceTraders.Ui.Services
             {
                 _token = value;
 
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
+                    _ = _httpClient.DefaultRequestHeaders.Remove("Authorization");
                     _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {value}");
                 }
             }
