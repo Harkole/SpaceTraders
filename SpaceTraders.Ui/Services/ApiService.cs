@@ -2,41 +2,14 @@
 
 namespace SpaceTraders.Ui.Services
 {
-    public class ApiService : IDisposable
+    public class ApiService
     {
-        private readonly HttpClient _httpClient;
-        private bool disposedValue;
-        private string? _token;
-
-        public string Token
-        {
-            get
-            {
-                return _token ?? string.Empty;
-            }
-
-            set
-            {
-                _token = value;
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    _ = _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                    _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {value}");
-                }
-            }
-        }
+        private const string BaseAddress = "https://api.spacetraders.io";
 
         /// <summary>
-        /// Configure the API service
+        /// The token to use in the Authorization header
         /// </summary>
-        public ApiService()
-        {
-            _httpClient = new()
-            {
-                BaseAddress = new Uri("https://api.spacetraders.io")
-            };
-        }
+        public string Token { get; set; } = string.Empty;
 
         /// <summary>
         /// Calls the API and attempts to parse the JSON response
@@ -46,7 +19,10 @@ namespace SpaceTraders.Ui.Services
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The API response as a parsed object <typeparamref name="T"/></returns>
         public async ValueTask<T?> Get<T>(string path, CancellationToken cancellationToken = default)
-            => await _httpClient.GetFromJsonAsync<T>(path, cancellationToken);
+        {
+            using HttpClient httpClient = GetHttpClient();
+            return await httpClient.GetFromJsonAsync<T>(path, cancellationToken);
+        }
 
         /// <summary>
         /// Posts to the API with no content
@@ -55,7 +31,10 @@ namespace SpaceTraders.Ui.Services
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The API response message</returns>
         public async ValueTask<HttpResponseMessage> Post(string path, CancellationToken cancellationToken = default)
-            => await _httpClient.PostAsync(path, null, cancellationToken);
+        {
+            using HttpClient httpClient = GetHttpClient();
+            return await httpClient.PostAsync(path, null, cancellationToken);
+        }
 
         /// <summary>
         /// Posts to the API with JSON body payload
@@ -65,26 +44,28 @@ namespace SpaceTraders.Ui.Services
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The API response message</returns>
         public async ValueTask<HttpResponseMessage> PostContent<T>(string path, T value, CancellationToken cancellationToken = default)
-            => await _httpClient.PostAsJsonAsync<T>(path, value, cancellationToken);
-
-        protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _httpClient.Dispose();
-                }
-
-                disposedValue = true;
-            }
+            using HttpClient httpClient = GetHttpClient();
+            return await httpClient.PostAsJsonAsync<T>(path, value, cancellationToken);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Constructs the HttpClient for calling the API
+        /// </summary>
+        /// <returns>A configured HttpClient</returns>
+        private HttpClient GetHttpClient()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            HttpClient httpClient = new()
+            {
+                BaseAddress = new Uri(BaseAddress),
+            };
+
+            if (!string.IsNullOrEmpty(Token))
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+            }
+
+            return httpClient;
         }
     }
 }
