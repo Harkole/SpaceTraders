@@ -1,0 +1,54 @@
+﻿@inject ApiService apiService;
+
+<div class="row align-items-start">
+    <div class="col">
+        <h2 class="h3 mb-3 fw-normal">Claim Username</h2>
+        <div class="form-floating-mb-3 mb-3">
+            <EditForm Model="@apiService.Actor" OnSubmit="@HandleClaimSubmit" class="form-floating">
+                <InputText id="username" @bind-Value="apiService.Actor.Username" class="form-control" placeholder="user" />
+                <label for="username">Username</label>
+                <div class="mb-3 p-2">
+                    <button class="btn btn-primary" type="submit">Claim Username</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+    <div class="col">
+        <h2>Sign In</h2>
+        <div class="form-floating-mb-3 mb-3">
+            <EditForm Model="@apiService.Actor" OnSubmit="@HandleLoginSubmit" class="form-floating">
+                <InputText id="token" @bind-Value="apiService.Actor.Token" class="form-control" placeholder="token" />
+                <label for="token">Token</label>
+                <div class="mb-3 p-2">
+                    <button class="btn btn-primary" type="submit">Login</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task HandleClaimSubmit()
+    {
+        HttpResponseMessage response = await apiService.Post($"/users/{apiService.Actor.Username}/claim");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+        {
+            apiService.Actor.Token = "Username already claimed, please select another name";
+        }
+        else
+        {
+            Actor? claimedActor = await response.Content.ReadFromJsonAsync<Actor>();
+
+            if (null != claimedActor)
+            {
+                apiService.Actor.Token = claimedActor.Token;
+            }
+        }
+    }
+
+    private async Task HandleLoginSubmit()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2));
+    }
+}

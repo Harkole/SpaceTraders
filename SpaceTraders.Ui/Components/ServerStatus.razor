@@ -1,0 +1,23 @@
+﻿@inject ApiService apiService;
+
+@using SpaceTraders.Ui.Models;
+
+<h2 class="text-center">ServerStatus</h2>
+
+@if (GameServerStatus == null)
+{
+    <p class="alert-info">Requesting Status...</p>
+}
+else
+{
+    <div class="container-lg text-center">
+        <p class="alert-success">GameServerStatus.Status</p>
+    </div>
+}
+
+@code {
+    private GameServerStatus? GameServerStatus = null;
+
+    protected override async Task OnInitializedAsync()
+    => GameServerStatus = await apiService.Get<GameServerStatus>("/game/status");
+}
