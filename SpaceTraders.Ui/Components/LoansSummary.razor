@@ -1,0 +1,60 @@
+﻿@inject ApiService _apiService;
+<h3>Loans</h3>
+@if (null != Loans?.Loans)
+{
+    <table class="table table-light text-center">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <td>&nbsp;</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (LoanDto loan in Loans.Loans)
+            {
+                <tr>
+                    <th>Id</th>
+                    <td>@loan.Id</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <th>Due</th>
+                    <td>@loan.Due</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <th>Repayment Amount</th>
+                    <td>@loan.RepaymentAmount</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>@loan.Status</td>
+                    @if (string.Equals(loan.Status, "CURRENT"))
+                    {
+                        <td>
+                            <button class="btn btn-primary disabled">Repay</button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>&nbps;</td>
+                    }
+                </tr>
+                <tr>
+                    <th>Type</th>
+                    <td>@loan.Type</td>
+                    <td>&nbsp;</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    LoansDto? Loans = null;
+
+    protected override async Task OnInitializedAsync()
+        => Loans = await _apiService.Get<LoansDto>("/my/loans");
+}
