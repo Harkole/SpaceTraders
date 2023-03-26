@@ -1,5 +1,7 @@
 ﻿@inject ApiService apiService;
 @inject NavigationManager navigationManager;
+@inject LocalStorageService localStorageService;
+
 
 <div class="row align-items-start">
     <div class="col">
@@ -58,11 +60,12 @@
             if (null != claimedActor?.Token)
             {
                 apiService.Token = claimedActor.Token;
+                await localStorageService.Save("token", claimedActor.Token);
             }
         }
     }
 
-    private void HandleLoginSubmit()
+    private async Task HandleLoginSubmit()
     {
         if (!Guid.TryParse(apiService.Token, out Guid _))
         {
@@ -71,6 +74,7 @@
         else
         {
             IsInvalidToken = false;
+            await localStorageService.Save("token", apiService.Token);
             navigationManager.NavigateTo("/myaccount");
         }
     }

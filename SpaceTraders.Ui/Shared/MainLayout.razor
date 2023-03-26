@@ -1,6 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using SpaceTraders.Ui.Components;
 
+@inject LocalStorageService _localStorageService;
+@inject ApiService _apiService;
+@inject NavigationManager _navManager;
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -16,3 +20,20 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        string token = await _localStorageService.Load("token");
+
+        if(!string.IsNullOrEmpty(token))
+        {
+            _apiService.Token = token;
+            _navManager.NavigateTo("/myaccount");
+        }
+        else
+        {
+            _navManager.NavigateTo("/");
+        }
+    }
+}
