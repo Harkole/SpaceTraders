@@ -5,17 +5,27 @@
 <table class="table table-light text-center">
     <thead>
         <tr>
-            <th scope="col">@nameof(AccountDto.JoinedAt)</th>
-            <th scope="col">@nameof(AccountDto.Credits)</th>
-            <th scope="col">@nameof(AccountDto.ShipCount)</th>
-            <th scope="col">@nameof(AccountDto.StructureCount)</th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <th scope="col">@nameof(AccountDto.JoinedAt)</th>
             <td>@AccountDetails?.JoinedAt</td>
+        </tr>
+        <tr>
+            <th scope="col">@nameof(AccountDto.Credits)</th>
             <td>@AccountDetails?.Credits</td>
+        </tr>
+        <tr>
+            <th scope="col">@nameof(AccountDto.ShipCount)</th>
             <td>@AccountDetails?.ShipCount</td>
+        </tr>
+        <tr>
+            <th scope="col">@nameof(AccountDto.StructureCount)</th>
             <td>@AccountDetails?.StructureCount</td>
         </tr>
     </tbody>
