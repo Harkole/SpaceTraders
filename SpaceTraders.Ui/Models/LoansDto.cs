@@ -2,6 +2,6 @@
 {
     public class LoansDto
     {
-        public IEnumerable<LoanDto> Loans { get; set; }
+        public IEnumerable<LoanDto>? Loans { get; set; }
     }
 }
