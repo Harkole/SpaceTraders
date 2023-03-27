@@ -1,0 +1,29 @@
+﻿@inject ApiService _apiService;
+
+<div id="actorStatusContainer" class="container text-white rounded-3 bg-info">
+    <p class="text-center lead">@accountDetails.Username</p>
+    <dl class="row">
+        <dt class="text-right col-sm-2">Credits</dt>
+        <dd class="col-sm-2">@accountDetails.Credits.ToString("N0")</dd>
+
+        <dt class="col-sm-2">Owned Ships</dt>
+        <dd class="col-sm-1">@accountDetails.ShipCount</dd>
+
+        <dt class="col-sm-3">Owned Strutures</dt>
+        <dd class="col-sm-1">@accountDetails.StructureCount</dd>
+    </dl>
+</div>
+
+@code {
+    private AccountDto accountDetails = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserDto? user = await _apiService.Get<UserDto>("my/account");
+
+        if (null != user?.User)
+        {
+            accountDetails = user.User;
+        }
+    }
+}
