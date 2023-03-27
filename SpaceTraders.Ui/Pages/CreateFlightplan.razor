@@ -1,0 +1,46 @@
+﻿@page "/createflightplan/{shipId}"
+@inject NavigationManager _navManager;
+@inject ApiService _apiService;
+
+<div class="container border rounded-3">
+    <h3><button type="button" title="Back" class="btn btn-close" @onclick="(() => NavigateBack())"></button> Create Flightplan</h3>
+</div>
+
+@if (null != locations)
+{
+    <ul>
+        @foreach (LocationDto location in locations)
+        {
+            <li>@location.Name :: @location.Symbol</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public string? ShipId { get; set; }
+
+    private IEnumerable<LocationDto>? locations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        RootShip? rootShip = await _apiService.Get<RootShip>($"/my/ships/{ShipId}");
+        ShipDto? ship = rootShip?.Ship;
+
+        if (null != ship?.Location && !string.IsNullOrEmpty(ship.Location))
+        {
+            string systemSymbol = ship.Location.Substring(0, 2);
+            LocationsDto? possibleLocations = await _apiService.Get<LocationsDto>($"/systems/{systemSymbol}/locations");
+
+            if (null != possibleLocations?.Locations)
+            {
+                locations = possibleLocations.Locations;
+            }
+        }
+    }
+
+    private void NavigateBack()
+    {
+        _navManager.NavigateTo("/accountoverview");
+    }
+}
