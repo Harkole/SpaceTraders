@@ -27,7 +27,14 @@
             {
                 <tr>
                     <td>@ship.Id</td>
-                    <td>@ship.FlightPlanId</td>
+                    @if(string.IsNullOrEmpty(ship.FlightPlanId))
+                    {
+                        <td><button class="btn btn-secondary btn-sm disabled"><i class="fas fa-rocket"></i><i class="fas fa-plus"></i></button></td>
+                    }
+                    else
+                    {
+                        <td><button class="btn btn-secondary btn-sm disabled"><i class="fa-regular fa-eye"></i></button></td>
+                    }
                     <td>@ship.Manufacturer</td>
                     <td>@ship.Class</td>
                     <td>@ship.Type</td>
