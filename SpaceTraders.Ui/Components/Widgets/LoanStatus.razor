@@ -1,0 +1,44 @@
+﻿@inject ApiService _apiService;
+
+<div id="loanStatusContainer" class="@activeContainerStyle">
+    <p class="lead">Loans</p>
+    <dl class="row">
+        <dt class="col-sm-3">Active Loans</dt>
+        <dd class="col-sm-3">@loanCount</dd>
+
+        <dt class="col-sm-3">Total Outstanding</dt>
+        <dd class="col-sm-3">@loanTotalValue.ToString("N0")</dd>
+    </dl>
+</div>
+
+@code {
+    private int loanCount;
+    private int loanTotalValue;
+
+    private const string containerStyle = "container text-center text-white rounded-3";
+    private string activeContainerStyle = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoansDto? loans = await _apiService.Get<LoansDto>("/my/loans");
+
+        if (null != loans?.Loans)
+        {
+            // Get active loans only for displaying on widget
+            IEnumerable<LoanDto> currentLoans = loans.Loans
+                .Where(x => x.Status == "CURRENT");
+
+            loanCount = currentLoans.Count();
+            loanTotalValue = currentLoans.Sum(x => x.RepaymentAmount);
+
+            if (0 < loanCount)
+            {
+                activeContainerStyle = $"{containerStyle} bg-danger";
+            } 
+            else
+            {
+                activeContainerStyle = $"{containerStyle} bg-info";
+            }
+        }
+    }
+}
