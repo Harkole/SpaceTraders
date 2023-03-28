@@ -53,12 +53,13 @@
 
         if (null != ship?.Location && !string.IsNullOrEmpty(ship.Location))
         {
-            string systemSymbol = ship.Location.Substring(0, 2);
-            LocationsDto? possibleLocations = await _apiService.Get<LocationsDto>($"/systems/{systemSymbol}/locations");
+            string shipSystemSymbol = ship.Location.Substring(0, 2);
+            LocationsDto? possibleLocations = await _apiService.Get<LocationsDto>($"/systems/{shipSystemSymbol}/locations");
 
             if (null != possibleLocations?.Locations)
             {
                 locations = possibleLocations.Locations;
+                systemSymbol = locations.FirstOrDefault()?.Symbol;
             }
         }
     }
