@@ -8,7 +8,6 @@
     <table class="table table-light table-striped text-center">
         <thead>
             <tr>
-                <th scope="col">@nameof(ShipDto.Id)</th>
                 <th scope="col">@nameof(ShipDto.FlightPlanId)</th>
                 <th scope="col">@nameof(ShipDto.Manufacturer)</th>
                 <th scope="col">@nameof(ShipDto.Class)</th>
@@ -27,7 +26,6 @@
             @foreach (ShipDto ship in Ships)
             {
                 <tr>
-                    <td>@ship.Id</td>
                     @if(string.IsNullOrEmpty(ship.FlightPlanId))
                     {
                         <td><button type="button" class="btn btn-secondary btn-sm" @onclick="(() => CreateFlightPlan(ship.Id))"><i class="fas fa-rocket"></i><i class="fas fa-plus"></i></button></td>
@@ -39,7 +37,16 @@
                     <td>@ship.Manufacturer</td>
                     <td>@ship.Class</td>
                     <td>@ship.Type</td>
-                    <td>@ship.Location</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(ship.Location))
+                        {
+                            <button title="View Market" class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-shop"></i>&nbsp;@ship.Location</button>
+                        }
+                        else
+                        {
+                            @("In Flight")
+                        }
+                    </td>
                     <td>@ship.MaxCargo</td>
                     <td>@ship.SpaceAvailable</td>
                     <td>@ship.Speed</td>
