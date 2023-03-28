@@ -1,0 +1,88 @@
+﻿@page "/viewFlightPlan/{flightPlanId}"
+
+@implements IDisposable
+
+@inject NavigationManager _navManager;
+@inject ApiService _apiService;
+
+@using System.Threading
+
+<div class="container border rounded-3 p-3">
+    <h3><button type="button" title="Back" class="btn btn-close" @onclick="(() => NavigateBack())"></button> View Flightplan</h3>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Arrival Time [UTC]</th>
+                <td>@flightPlanDto?.ArrivesAt.ToString("G")</td>
+            </tr>
+            <tr>
+                <th scope="col">Arrives In</th>
+                <td>@arrivesInValue</td>
+            </tr>
+            <tr>
+                <th scope="col">Departed</th>
+                <td>@flightPlanDto?.Departure</td>
+            </tr>
+            <tr>
+                <th scope="col">Destination</th>
+                <td>@flightPlanDto?.Destination</td>
+            </tr>
+            <tr>
+                <th scope="col">Distance</th>
+                <td>@flightPlanDto?.Distance</td>
+            </tr>
+            <tr>
+                <th scope="col">Fuel Required</th>
+                <td>@flightPlanDto?.FuelConsumed</td>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public string? FlightPlanId { get; set; }
+
+    private FlightPlanDto? flightPlanDto;
+
+    private Timer? timer;
+    private string? arrivesInValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        RootFlightPlanDto? rootFlightPlanDto = await _apiService.Get<RootFlightPlanDto>($"/my/flight-plans/{FlightPlanId}");
+
+        if (null != rootFlightPlanDto && null != rootFlightPlanDto.FlightPlan?.TimeRemainingInSeconds)
+        {
+            flightPlanDto = rootFlightPlanDto.FlightPlan;
+
+            timer = new Timer(async _ =>
+            {
+                if(0 < flightPlanDto.TimeRemainingInSeconds)
+                {
+                    flightPlanDto.TimeRemainingInSeconds -= 1;
+                    arrivesInValue = $"{flightPlanDto?.TimeRemainingInSeconds} [seconds]";
+
+                    await InvokeAsync(StateHasChanged);
+                }
+                else
+                {
+                    arrivesInValue = "Flight Landed";
+                    await InvokeAsync(StateHasChanged);
+                }
+            }, null, 0, 1000);
+        }
+    }
+
+    private void NavigateBack()
+    {
+        _navManager.NavigateTo("/accountoverview");
+    }
+
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}
