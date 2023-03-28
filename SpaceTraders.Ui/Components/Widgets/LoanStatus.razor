@@ -20,7 +20,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        LoansDto? loans = await _apiService.Get<LoansDto>("/my/loans");
+        RootLoansDto? loans = await _apiService.Get<RootLoansDto>("/my/loans");
 
         if (null != loans?.Loans)
         {

@@ -53,8 +53,8 @@
 }
 
 @code {
-    LoansDto? Loans = null;
+    RootLoansDto? Loans = null;
 
     protected override async Task OnInitializedAsync()
-        => Loans = await _apiService.Get<LoansDto>("/my/loans");
+        => Loans = await _apiService.Get<RootLoansDto>("/my/loans");
 }

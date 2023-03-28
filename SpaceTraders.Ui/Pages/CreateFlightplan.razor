@@ -54,7 +54,7 @@
         if (null != ship?.Location && !string.IsNullOrEmpty(ship.Location))
         {
             string shipSystemSymbol = ship.Location.Substring(0, 2);
-            LocationsDto? possibleLocations = await _apiService.Get<LocationsDto>($"/systems/{shipSystemSymbol}/locations");
+            RootLocationsDto? possibleLocations = await _apiService.Get<RootLocationsDto>($"/systems/{shipSystemSymbol}/locations");
 
             if (null != possibleLocations?.Locations)
             {

@@ -1,6 +1,6 @@
 ﻿namespace SpaceTraders.Ui.Models
 {
-    public class LoansDto
+    public class RootLoansDto
     {
         public IEnumerable<LoanDto>? Loans { get; set; }
     }

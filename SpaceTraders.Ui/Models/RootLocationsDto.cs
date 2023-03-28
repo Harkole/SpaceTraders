@@ -1,6 +1,6 @@
 ﻿namespace SpaceTraders.Ui.Models
 {
-    public class LocationsDto
+    public class RootLocationsDto
     {
         public IEnumerable<LocationDto>? Locations { get; set; }
     }
