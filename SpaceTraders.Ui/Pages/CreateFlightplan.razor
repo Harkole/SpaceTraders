@@ -2,23 +2,47 @@
 @inject NavigationManager _navManager;
 @inject ApiService _apiService;
 
-<div class="container border rounded-3">
+<div class="container border rounded-3 p-3">
     <h3><button type="button" title="Back" class="btn btn-close" @onclick="(() => NavigateBack())"></button> Create Flightplan</h3>
+    @if (null != locations)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <p class="text-center col-form-label">Select Destination</p>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" aria-label="Select Destination" @bind="systemSymbol">
+                        @foreach (LocationDto location in locations)
+                        {
+                            <option value="@location.Symbol">
+                                @if (location.Name == "Wormhole")
+                                {
+                                    @(location.Name + " " + location.Symbol)
+                                }
+                                else
+                                {
+                                    @location.Name
+                                }
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-primary" type="button" @onclick="CreateFlightPlanAsync">Submit</button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
-@if (null != locations)
-{
-    <ul>
-        @foreach (LocationDto location in locations)
-        {
-            <li>@location.Name :: @location.Symbol</li>
-        }
-    </ul>
-}
+
 
 @code {
     [Parameter]
     public string? ShipId { get; set; }
+
+    private string? systemSymbol { get; set; }
 
     private IEnumerable<LocationDto>? locations;
 
@@ -35,6 +59,28 @@
             if (null != possibleLocations?.Locations)
             {
                 locations = possibleLocations.Locations;
+            }
+        }
+    }
+
+    private async Task CreateFlightPlanAsync()
+    {
+        if (null != systemSymbol)
+        {
+            FlightPlanDto createFlightplan = new()
+                {
+                    ShipId = ShipId,
+                    Destination = systemSymbol,
+                };
+
+            HttpResponseMessage response = await _apiService.PostContent<FlightPlanDto>("/my/flight-plans", createFlightplan);
+            if (response.IsSuccessStatusCode)
+            {
+                _navManager.NavigateTo("/accountoverview");
+            }
+            else
+            {
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
         }
     }
