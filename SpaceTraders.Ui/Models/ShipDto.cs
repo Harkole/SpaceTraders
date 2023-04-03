@@ -16,6 +16,10 @@
 
         public int MaxCargo { get; set; }
 
+        public int LoadingSpeed { get; set; }
+
+        public IEnumerable<string>? RestrictedGoods { get; set; }
+
         public int Plating { get; set; }
 
         public int SpaceAvailable { get; set; }
