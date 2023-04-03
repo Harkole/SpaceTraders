@@ -2,5 +2,6 @@
 {
     public class RootMarketPlaceDto
     {
+        public IEnumerable<MarketItemDto>? Marketplace { get; set; }
     }
 }
