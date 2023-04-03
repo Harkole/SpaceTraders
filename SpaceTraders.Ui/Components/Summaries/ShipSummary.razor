@@ -40,7 +40,7 @@
                     <td>
                         @if (!string.IsNullOrEmpty(ship.Location))
                         {
-                            <button title="View Market" class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-shop"></i>&nbsp;@ship.Location</button>
+                            <button title="View Market" class="btn btn-secondary btn-sm" @onclick="(() => ViewMarketplace(ship.Location, ship.Id))"><i class="fa-solid fa-shop"></i>&nbsp;@ship.Location</button>
                         }
                         else
                         {
@@ -77,4 +77,7 @@
 
     private void ViewFlightPlan(string flightPlanId)
     => _navManager.NavigateTo($"/viewFlightPlan/{flightPlanId}");
+
+    private void ViewMarketplace(string locationSymbol, string shipId)
+    => _navManager.NavigateTo($"/marketplace/{locationSymbol}/{shipId}");
 }
