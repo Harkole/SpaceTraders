@@ -1,11 +1,14 @@
-﻿namespace SpaceTraders.Ui.Models
+﻿using System.Text.Json.Serialization;
+
+namespace SpaceTraders.Ui.Models
 {
     public class CargoDto
     {
-        public string Name { get; set; } = string.Empty;
-
+        [JsonPropertyName("good")]
         public string Symbol { get; set; } = string.Empty;
 
-        public int VolumePerUnit { get; set; }
+        public int Quantity { get; set; }
+
+        public int TotalVolume{ get; set; }
     }
 }
