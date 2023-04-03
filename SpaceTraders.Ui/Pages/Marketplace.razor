@@ -1,0 +1,99 @@
+﻿@page "/marketplace/{locationSymbol}/{shipId}"
+
+@inject NavigationManager _navManager;
+@inject ApiService _apiService;
+
+<h3><button type="button" title="Back" class="btn btn-close" @onclick="(() => NavigateBack())"></button>@LocationSymbol Marketplace</h3>
+<div class="container-md">
+    <div class="row">
+        <div class="col-2 bg-info rounded-3 me-2 text-center">
+            <dl data-bs-toggle="tooltip" title="Current/Max Cargo Space">
+                <dt>Cargo Space</dt>
+                <dd>@cargoAmount / @maxCargo</dd>
+            </dl>
+        </div>
+        <div class="col-2 bg-info rounded-3  text-center">
+            <dl data-bs-toggle="tooltip" title="Speed at which ship can (un)load cargo">
+                <dt>Loading Speed</dt>
+                <dd>@loadingSpeed</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity Available</th>
+                <th>Buying [per unit]</th>
+                <th>Selling [per unit]</th>
+                <th>Cargo Space [per unit]</th>
+                <th>Owned Cargo</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (MarketItemDto item in marketItems)
+            {
+                <tr>
+                    <td>@item.Symbol</td>
+                    <td>@item.QuantityAvailable</td>
+                    <td>@item.PurchasePricePerUnit</td>
+                    <td>@item.SellPricePerUnit</td>
+                    <td>@item.VolumePerUnit</td>
+                    <td>@shipCargo.Where(x => x.Symbol == item.Symbol).Select(x => x.Quantity).FirstOrDefault()</td>
+                    <td>
+                        <div class="btn-group me-2" role="group">
+                            <button type="button" class="btn btn-secondary btn-sm" disabled>Buy</button>
+                        </div>
+                        @if (0 != shipCargo.Where(x => x.Symbol == item.Symbol).Select(x => x.Quantity).FirstOrDefault())
+                        {
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>Sell</button>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    [Parameter]
+    public string? LocationSymbol { get; set; }
+
+    [Parameter]
+    public string? ShipId { get; set; }
+
+    private IEnumerable<MarketItemDto> marketItems = Enumerable.Empty<MarketItemDto>();
+    private IEnumerable<CargoDto> shipCargo = Enumerable.Empty<CargoDto>();
+
+    private int cargoAmount = 0;
+    private int maxCargo = 0;
+    private int loadingSpeed = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(LocationSymbol))
+        {
+            RootMarketPlaceDto? marketData = await _apiService.Get<RootMarketPlaceDto>($"/locations/{LocationSymbol}/marketplace");
+            RootShip? rootShip = await _apiService.Get<RootShip>($"/my/ships/{ShipId}");
+
+            if (null != marketData?.Marketplace)
+            {
+                marketItems = marketData.Marketplace;
+                shipCargo = rootShip?.Ship?.Cargo ?? Enumerable.Empty<CargoDto>();
+
+                maxCargo = rootShip?.Ship?.MaxCargo ?? 0;
+                cargoAmount = rootShip?.Ship?.Cargo?.Sum(x => x.TotalVolume) ?? 0;
+                loadingSpeed = rootShip?.Ship?.LoadingSpeed ?? 0;
+            }
+        }
+    }
+
+    private void NavigateBack()
+    => _navManager.NavigateTo("/accountoverview");
+}
